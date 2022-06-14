@@ -17,6 +17,9 @@ using namespace std;
   - use BFS hence a queue is required
   - a set to record nodes we have visited
   - a hash table to track which node has been created
+    - a mapping from the original node to the created
+      node
+  - time complexity O(V+E)
 */
 
 Node *Solution::cloneGraph(Node *node)
@@ -26,7 +29,7 @@ Node *Solution::cloneGraph(Node *node)
   /* for BFS to deal with cyclic graph */
   auto visited = unordered_set<Node *>();
   /* original -> cloned */
-  auto created = unordered_map<Node *, Node *>();
+  auto cloned = unordered_map<Node *, Node *>();
   auto q = queue<Node *>();
   q.push(node);
 
@@ -38,19 +41,19 @@ Node *Solution::cloneGraph(Node *node)
       continue;
     visited.insert(visit);
     /* clone the node */
-    if (!created.count(visit))
-      created[visit] = new Node(visit->id);
-      
-    auto cloned = created[visit];
+    if (!cloned.count(visit))
+      cloned[visit] = new Node(visit->id);
+
+    auto c = cloned[visit];
     /* clone the neighbors */
     for (auto n : visit->neighbors)
     {
-      if (!created.count(n))
-        created[n] = new Node(n->id);
-      cloned->neighbors.push_back(created[n]);
+      if (!cloned.count(n))
+        cloned[n] = new Node(n->id);
+      c->neighbors.push_back(cloned[n]);
       q.push(n);
     }
   }
 
-  return created[node];
+  return cloned[node];
 }
